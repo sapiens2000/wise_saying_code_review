@@ -44,4 +44,8 @@ public class WiseSayingService {
     public void build() throws IOException {
         fileWiseSayingRepository.build();
     }
+
+    public List<WiseSaying> search(String keywordType, String keyword) {
+        return fileWiseSayingRepository.search(keywordType, keyword);
+    }
 }

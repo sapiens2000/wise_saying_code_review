@@ -100,4 +100,27 @@ class WiseSayingControllerTest {
         assertThat(out)
                 .contains("data.json 파일의 내용이 갱신되었습니다.");
     }
+    
+    @DisplayName("등록 후 검색 성공")
+    @Test
+    void 검색(){
+        final String out = AppTest.run("""
+                등록
+                1번 메시지
+                1번 작가
+                목록?keywordType=author&keyword=작가
+                종료
+                """);
+        
+        assertThat(out)
+                .contains("명언 :")
+                .contains("작가 :")
+                .contains("1번 명언이 등록되었습니다.")
+                .contains("검색타입 : author")
+                .contains("검색어 : 작가")
+                .contains("----------------------")
+                .contains("번호 / 작가 / 명언")
+                .contains("----------------------")
+                .contains("1 / 1번 작가 / 1번 메시지");
+    }
 }

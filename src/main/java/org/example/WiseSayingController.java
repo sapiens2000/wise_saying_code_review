@@ -1,6 +1,7 @@
 package org.example;
 
 import java.io.*;
+import java.util.List;
 
 
 public class WiseSayingController {
@@ -22,6 +23,7 @@ public class WiseSayingController {
                 else if (cmd.equals("빌드")) build();
                 else if (cmd.equals("등록")) register();
                 else if (cmd.equals("목록")) list();
+                else if (cmd.startsWith("목록?")) search(cmd);
                 else if (cmd.startsWith("삭제?id=")) delete(cmd);
                 else if (cmd.startsWith("수정?id=")) update(cmd);
             }
@@ -79,5 +81,26 @@ public class WiseSayingController {
         for (WiseSaying cur : wiseSayingService.getSayingList().reversed()) {
             System.out.printf("%d / %s / %s\n", cur.getId(), cur.getAuthor(), cur.getWiseSaying());
         }
+    }
+
+    private void search(String cmd){
+        String[] tokens = cmd.split("&");
+        String keywordType = tokens[0].split("=")[1];
+        String keyword = tokens[1].split("=")[1];
+
+
+        System.out.println("----------------------");
+        System.out.println("검색타입 : " + keywordType);
+        System.out.println("검색어 : " + keyword);
+        System.out.println("----------------------");
+        System.out.println("번호 / 작가 / 명언");
+        System.out.println("----------------------");
+
+        List<WiseSaying> result = wiseSayingService.search(keywordType, keyword);
+
+        for (WiseSaying cur : result.reversed()) {
+            System.out.printf("%d / %s / %s\n", cur.getId(), cur.getAuthor(), cur.getWiseSaying());
+        }
+
     }
 }

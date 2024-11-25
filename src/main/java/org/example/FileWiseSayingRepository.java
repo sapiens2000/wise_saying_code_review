@@ -2,6 +2,9 @@ package org.example;
 
 import java.io.*;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class FileWiseSayingRepository implements WiseSayingRepository {
     private final LinkedHashMap<Integer, WiseSaying> wiseSayingMap = new LinkedHashMap<>();
@@ -200,5 +203,18 @@ public class FileWiseSayingRepository implements WiseSayingRepository {
         sb.append("\n]");
         bw.write(sb.toString());
         bw.flush();
+    }
+
+    public List<WiseSaying> search(String keywordType, String keyword) {
+        return switch (keywordType) {
+            case "author" -> wiseSayingMap.values().stream()
+                    .filter(wiseSaying -> wiseSaying.getAuthor().contains(keyword))
+                    .toList();
+            case "content" -> wiseSayingMap.values().stream()
+                    .filter(wiseSaying -> wiseSaying.getWiseSaying().contains(keyword))
+                    .toList();
+            // null
+            default -> List.of();
+        };
     }
 }
