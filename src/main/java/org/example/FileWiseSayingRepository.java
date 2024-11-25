@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.LinkedHashMap;
 
 public class FileWiseSayingRepository implements WiseSayingRepository {
-    private final LinkedHashMap<Integer, WiseSaying> wiseSayingMap;
+    private final LinkedHashMap<Integer, WiseSaying> wiseSayingMap = new LinkedHashMap<>();
     private BufferedReader br;
     private BufferedWriter bw;
     private StringBuilder sb;
@@ -12,11 +12,12 @@ public class FileWiseSayingRepository implements WiseSayingRepository {
     private int id;
 
     private static final String idFile = "lastId.txt";
-    private static final String basePath = System.getProperty("user.dir") + "\\db\\wiseSaying\\";
+    private final String basePath;
 
-    public FileWiseSayingRepository(LinkedHashMap<Integer, WiseSaying> wiseSayingMap) {
-        this.wiseSayingMap = wiseSayingMap;
+    public FileWiseSayingRepository(int mode) {
         this.sb = new StringBuilder();
+        basePath = mode == 1 ? System.getProperty("user.dir") + "\\db\\test\\wiseSaying\\"
+                : System.getProperty("user.dir") + "\\db\\wiseSaying\\";
         this.load();
     }
 
@@ -27,7 +28,6 @@ public class FileWiseSayingRepository implements WiseSayingRepository {
         if (!idFile.exists()) {
             try {
                 this.id = 1;
-                idFile.createNewFile();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -42,40 +42,36 @@ public class FileWiseSayingRepository implements WiseSayingRepository {
 
         // 전체 데이터 읽기
         File fileList = new File(basePath);
-
-        for (String fileName : fileList.list()) {
-            // null 아닐 경우 데이터 읽기
-            if (fileName != null) {
+        if(fileList.list() != null){
+            for (String fileName : fileList.list()) {
                 try {
                     File inputData = new File(basePath + "\\" + fileName);
                     br = new BufferedReader(new FileReader(inputData));
-
-                    // 데이터 파일 존재하면 거기서 읽을 것인지?
-                    if(fileName.equals("data.json")){
-                        //TODO
-                    }else if (fileName.endsWith("json")) {
+                    if (!fileName.startsWith("data") && fileName.endsWith("json")) {
                         // 개별 파일 하나씩 읽기
-                        
                         br.readLine();
                         // { 버리기
                         String data = br.readLine();
                         sb.setLength(0);
-                        sb.append(data.split(" : ")[1]);
+                        sb.append(data.split(":")[1]);
+
+                        // 문자열 끝 , 제거
                         sb.deleteCharAt(sb.length() - 1);
                         int id = Integer.parseInt(sb.toString());
 
                         // content 읽기
                         data = br.readLine();
                         sb.setLength(0);
-                        sb.append(data.split(" : ")[1]);
+                        sb.append(data.split(":")[1]);
                         sb.deleteCharAt(0);
                         sb.deleteCharAt(sb.length() - 1);
                         sb.deleteCharAt(sb.length() - 1);
                         String content = sb.toString();
+
                         // author 읽기
                         data = br.readLine();
                         sb.setLength(0);
-                        sb.append(data.split(" : ")[1]);
+                        sb.append(data.split(":")[1]);
                         sb.deleteCharAt(0);
                         sb.deleteCharAt(sb.length() - 1);
                         String author = sb.toString();
@@ -103,24 +99,7 @@ public class FileWiseSayingRepository implements WiseSayingRepository {
 
         try {
             bw = new BufferedWriter(new FileWriter(dataFile));
-
-            // 데이터 json 구조로 생성 (분리 예정)
-
-            String jsonStr = String.format("""
-                    {
-                    \t"id":"%d",
-                    \t"content":"%s",
-                    \t"author":"%s"
-                    }
-                    ,
-                    """, newWiseSaying.getId(), newWiseSaying.getWiseSaying(), newWiseSaying.getAuthor());
-            String jsonData = "{\n"
-                    + "\t\"id\" : " + newWiseSaying.getId() + ",\n"
-                    + "\t\"content\" : \"" + newWiseSaying.getWiseSaying() + "\",\n"
-                    + "\t\"author\" : \"" + newWiseSaying.getAuthor() + "\"\n"
-                    + "}";
-
-            bw.write(jsonStr);
+            bw.write(newWiseSaying.toJson());
             bw.flush();
 
             File idFile = new File(FileWiseSayingRepository.idFile);
@@ -131,9 +110,13 @@ public class FileWiseSayingRepository implements WiseSayingRepository {
                     e.printStackTrace();
                 }
             }
-            jsonData = "" + newWiseSaying.getId();
+
             bw = new BufferedWriter(new FileWriter(idFile));
-            bw.write(jsonData);
+            
+            // 마지막 id 저장
+            bw.write(newWiseSaying.getId());
+            bw.flush();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -155,15 +138,7 @@ public class FileWiseSayingRepository implements WiseSayingRepository {
         }
         try {
             bw = new BufferedWriter(new FileWriter(dataFile));
-
-            // 데이터 json 구조로 생성 (분리 예정)
-            String jsonData = "{\n"
-                    + "\t\"id\" : " + wiseSaying.getId() + ",\n"
-                    + "\t\"content\" : \"" + wiseSaying.getWiseSaying() + "\",\n"
-                    + "\t\"author\" : \"" + wiseSaying.getAuthor() + "\"\n"
-                    + "}";
-
-            bw.write(jsonData);
+            bw.write(wiseSaying.toJson());
             bw.flush();
 
             File idFile = new File(FileWiseSayingRepository.idFile);
@@ -174,9 +149,8 @@ public class FileWiseSayingRepository implements WiseSayingRepository {
                     e.printStackTrace();
                 }
             }
-            jsonData = "" + wiseSaying.getId();
             bw = new BufferedWriter(new FileWriter(idFile));
-            bw.write(jsonData);
+            bw.write(wiseSaying.getId());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -207,32 +181,24 @@ public class FileWiseSayingRepository implements WiseSayingRepository {
         return this.id;
     }
 
-    public void build() {
-        try {
-            File jsonDataFile = new File(basePath + "data.json");
-            bw = new BufferedWriter(new FileWriter(jsonDataFile));
+    public void build() throws IOException {
+        File jsonDataFile = new File(basePath + "data.json");
+        bw = new BufferedWriter(new FileWriter(jsonDataFile));
 
-            sb.setLength(0);
-            sb.append("[\n");
-            for (int key : wiseSayingMap.keySet()) {
-                WiseSaying cur = wiseSayingMap.get(key);
+        sb.setLength(0);
+        sb.append("[\n");
+        for (int key : wiseSayingMap.keySet()) {
+            WiseSaying cur = wiseSayingMap.get(key);
 
-                // json 구조로 생성
-                sb.append("\t{\n")
-                    .append("\t\t\"id\" : " + cur.getId() + ",\n")
-                    .append("\t\t\"content\" : \"" + cur.getWiseSaying() + "\",\n")
-                    .append("\t\t\"author\" : \"" + cur.getAuthor() + "\"\n")
-                    .append("\t}");
-                if(key < wiseSayingMap.size()){
-                    sb.append(",");
-                }
-
+            // json 구조로 생성
+            sb.append(cur.toJson());
+            if(key < wiseSayingMap.size()){
+                sb.append(",\n");
             }
-            sb.append("\n]");
-            bw.write(sb.toString());
-            bw.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
+
         }
+        sb.append("\n]");
+        bw.write(sb.toString());
+        bw.flush();
     }
 }

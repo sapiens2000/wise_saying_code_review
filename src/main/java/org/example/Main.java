@@ -1,16 +1,22 @@
 package org.example;
 
 import java.io.*;
-import java.util.LinkedHashMap;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        LinkedHashMap<Integer, WiseSaying> wiseSayingMap = new LinkedHashMap<>();
+        App app = new App();
+        app.run(new BufferedReader(new InputStreamReader(System.in)), 0);
+    }
+}
 
-        FileWiseSayingRepository fileWiseSayingRepository = new FileWiseSayingRepository(wiseSayingMap);
+class App{
+    public void run(BufferedReader br, int mode){
+        // 1 = test
+        FileWiseSayingRepository fileWiseSayingRepository = new FileWiseSayingRepository(mode);
+
         WiseSayingService wiseSayingService = new WiseSayingService(fileWiseSayingRepository);
-        WiseSayingController wiseSayingController = new WiseSayingController(wiseSayingService);
+        WiseSayingController wiseSayingController = new WiseSayingController(wiseSayingService, br);
         wiseSayingController.run();
-
     }
 }

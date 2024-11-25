@@ -12,6 +12,15 @@ public class WiseSaying {
         this.wiseSaying = wiseSaying;
     }
 
+    public String toJson(){
+        return String.format("""
+                    {
+                    \t"id":%d,
+                    \t"content":"%s",
+                    \t"author":"%s"
+                    }""", this.getId(), this.getWiseSaying(), this.getAuthor());
+    }
+
     public int getId() {
         return id;
     }

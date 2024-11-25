@@ -1,10 +1,11 @@
 package org.example;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class WiseSayingService {
-    private FileWiseSayingRepository fileWiseSayingRepository;
+    private final FileWiseSayingRepository fileWiseSayingRepository;
 
     public WiseSayingService(FileWiseSayingRepository fileWiseSayingRepository) {
         this.fileWiseSayingRepository = fileWiseSayingRepository;
@@ -27,8 +28,8 @@ public class WiseSayingService {
         return fileWiseSayingRepository.update(wiseSaying);
     }
     // 명언 삭제
-    public int deleteWiseSaying(String command){
-        String tmp = command.split("=")[1];
+    public int deleteWiseSaying(String cmd){
+        String tmp = cmd.split("=")[1];
         return fileWiseSayingRepository.deleteById(Integer.parseInt(tmp));
     }
 
@@ -40,7 +41,7 @@ public class WiseSayingService {
                 .values());
     }
 
-    public void build() {
+    public void build() throws IOException {
         fileWiseSayingRepository.build();
     }
 }
