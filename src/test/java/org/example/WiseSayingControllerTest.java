@@ -66,14 +66,10 @@ class WiseSayingControllerTest {
                 1번 메시지
                 1번 작가
                 수정?id=2
-                수정 테스트 내용
-                수정 테스트 작가
                 종료
                 """);
         assertThat(out)
-                .contains("명언(기존) :")
-                .contains("작가(기존) :");
-
+                .contains("2번 명언은 존재하지 않습니다.");
     }
 
     @DisplayName("등록 후 삭제 성공 (결과 조회 없음까지)")

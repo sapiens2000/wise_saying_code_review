@@ -61,18 +61,19 @@ public class WiseSayingController {
 
         if(oldWiseSaying == null){
             System.out.println(targetId + "번 명언은 존재하지 않습니다.");
+        }else {
+
+            System.out.println("명언(기존) : " + oldWiseSaying.getWiseSaying());
+            System.out.print("명언 : ");
+            String newWiseSaying = br.readLine();
+
+            System.out.println("작가(기존) : " + oldWiseSaying.getAuthor());
+            System.out.print("작가 : ");
+            String newAuthor = br.readLine();
+
+            WiseSaying updated = wiseSayingService.updateWiseSaying(oldWiseSaying, newWiseSaying, newAuthor);
+            System.out.printf("%d번 명언이 수정되었습니다.\n", updated.getId());
         }
-
-        System.out.println("명언(기존) : " + oldWiseSaying.getWiseSaying());
-        System.out.print("명언 : ");
-        String newWiseSaying = br.readLine();
-
-        System.out.println("작가(기존) : " + oldWiseSaying.getAuthor());
-        System.out.print("작가 : ");
-        String newAuthor = br.readLine();
-
-        WiseSaying updated = wiseSayingService.updateWiseSaying(oldWiseSaying, newWiseSaying, newAuthor);
-        System.out.printf("%d번 명언이 수정되었습니다.\n", updated.getId());
     }
 
     // 페이지 명시 O 목록 조회
