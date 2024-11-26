@@ -3,8 +3,7 @@ package org.example;
 import java.io.*;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
 
 public class FileWiseSayingRepository implements WiseSayingRepository {
     private final LinkedHashMap<Integer, WiseSaying> wiseSayingMap = new LinkedHashMap<>();
@@ -31,13 +30,17 @@ public class FileWiseSayingRepository implements WiseSayingRepository {
         if (!idFile.exists()) {
             try {
                 this.id = 1;
+                bw = new BufferedWriter(new FileWriter(idFile));
+                bw.write(""+1);
+                bw.flush();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
             try {
                 br = new BufferedReader(new FileReader(idFile));
-                this.id = Integer.parseInt(br.readLine());
+                // 마지막 생성 id에 + 1 해주기
+                this.id = Integer.parseInt(br.readLine()) + 1;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -130,33 +133,22 @@ public class FileWiseSayingRepository implements WiseSayingRepository {
     }
 
     @Override
-    public WiseSaying update(WiseSaying wiseSaying) {
+    public WiseSaying update(WiseSaying wiseSaying) throws IOException {
         File dataFile = new File(basePath + wiseSaying.getId() + ".json");
         if (!dataFile.exists()) {
-            try {
-                dataFile.createNewFile();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            dataFile.createNewFile();
         }
-        try {
-            bw = new BufferedWriter(new FileWriter(dataFile));
-            bw.write(wiseSaying.toJson());
-            bw.flush();
+        bw = new BufferedWriter(new FileWriter(dataFile));
+        bw.write(wiseSaying.toJson());
+        bw.flush();
 
-            File idFile = new File(FileWiseSayingRepository.idFile);
-            if (!idFile.exists()) {
-                try {
-                    idFile.createNewFile();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            bw = new BufferedWriter(new FileWriter(idFile));
-            bw.write(wiseSaying.getId());
-        } catch (IOException e) {
-            e.printStackTrace();
+        File idFile = new File(FileWiseSayingRepository.idFile);
+        if (!idFile.exists()) {
+            idFile.createNewFile();
         }
+        bw = new BufferedWriter(new FileWriter(idFile));
+        bw.write(wiseSaying.getId());
+
         return wiseSaying;
     }
 

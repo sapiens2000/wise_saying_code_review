@@ -22,7 +22,7 @@ public class WiseSayingService {
     }
 
     // 명언 수정
-    public WiseSaying updateWiseSaying(WiseSaying wiseSaying, String newWiseSaying, String newAuthor){
+    public WiseSaying updateWiseSaying(WiseSaying wiseSaying, String newWiseSaying, String newAuthor) throws IOException {
         wiseSaying.setWiseSaying(newWiseSaying);
         wiseSaying.setAuthor(newAuthor);
         return fileWiseSayingRepository.update(wiseSaying);

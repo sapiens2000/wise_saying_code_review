@@ -10,13 +10,18 @@ public class Main {
     }
 }
 
-class App{
-    public void run(BufferedReader br, int mode){
+class App {
+
+    public void run(BufferedReader br, int mode) {
         // 1 = test
         FileWiseSayingRepository fileWiseSayingRepository = new FileWiseSayingRepository(mode);
 
         WiseSayingService wiseSayingService = new WiseSayingService(fileWiseSayingRepository);
         WiseSayingController wiseSayingController = new WiseSayingController(wiseSayingService, br);
-        wiseSayingController.run();
+        try {
+            wiseSayingController.run();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
