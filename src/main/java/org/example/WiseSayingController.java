@@ -21,8 +21,8 @@ public class WiseSayingController {
             if (cmd.equals("종료")) break;
             else if (cmd.equals("빌드")) build();
             else if (cmd.equals("등록")) register();
+            // 목록 커맨드 리팩토링 좀 해야할듯..
             else if (cmd.equals("목록")) list(cmd);
-            // 리팩토링 예정
             else if (cmd.contains("목록?page")) listWithPage(cmd);
             else if (cmd.startsWith("목록?")) search(cmd);
             else if (cmd.startsWith("삭제?id=")) delete(cmd);
@@ -30,8 +30,6 @@ public class WiseSayingController {
         }
 
     }
-
-
 
     private void build() throws IOException {
         wiseSayingService.build();
@@ -64,6 +62,7 @@ public class WiseSayingController {
         if(oldWiseSaying == null){
             System.out.println(targetId + "번 명언은 존재하지 않습니다.");
         }
+
         System.out.println("명언(기존) : " + oldWiseSaying.getWiseSaying());
         System.out.print("명언 : ");
         String newWiseSaying = br.readLine();
@@ -87,7 +86,6 @@ public class WiseSayingController {
         System.out.println("----------------------");
 
         List<WiseSaying> wiseSayingList = wiseSayingService.getSayingList().reversed();
-
 
         // 총 개수
         int totalSize = wiseSayingList.size();

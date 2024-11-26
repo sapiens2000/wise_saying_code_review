@@ -27,7 +27,7 @@ class WiseSayingControllerTest {
 
     @DisplayName("명언 등록 후 확인")
     @Test
-    void 등록() {
+    void 등록성공() {
         final String out = AppTest.run("""
                 등록
                 1번 메시지
@@ -42,7 +42,7 @@ class WiseSayingControllerTest {
 
     @DisplayName("등록 후 수정 성공")
     @Test
-    void 수정(){
+    void 수정성공(){
         final String out = AppTest.run("""
                 등록
                 1번 메시지
@@ -60,7 +60,7 @@ class WiseSayingControllerTest {
 
     @DisplayName("등록 후 삭제 성공")
     @Test
-    void 삭제(){
+    void 삭제성공후조회시도(){
         final String out = AppTest.run("""
                 등록
                 1번 메시지
@@ -76,7 +76,7 @@ class WiseSayingControllerTest {
 
     @DisplayName("등록 후 목록 확인")
     @Test
-    void 목록(){
+    void 등록후목록(){
         final String out = AppTest.run("""
                 등록
                 1번 메시지
@@ -94,7 +94,7 @@ class WiseSayingControllerTest {
 
     @DisplayName("빌드 성공")
     @Test
-    void 빌드(){
+    void 빌드성공(){
         final String out = AppTest.run("""               
                 빌드
                 종료
@@ -105,7 +105,7 @@ class WiseSayingControllerTest {
     
     @DisplayName("등록 후 검색 성공")
     @Test
-    void 검색(){
+    void 작가검색성공(){
         final String out = AppTest.run("""
                 등록
                 1번 메시지
@@ -123,9 +123,23 @@ class WiseSayingControllerTest {
                 .contains("1 / 1번 작가 / 1번 메시지");
     }
 
+    @DisplayName("검색 실패")
+    @Test
+    void 작가검색실패(){
+        final String out = AppTest.run("""
+                목록?keywordType=author&keyword=아무개
+                종료
+                """);
+
+        assertThat(out)
+                .contains("검색타입 : author")
+                .contains("검색어 : 아무개")
+                .contains("----------------------");
+    }
+
     @DisplayName("페이징 목록 조회 조건 없이")
     @Test
-    void 페이지없이페이징(){
+    void 페이지없이페이징조회(){
         final String out = AppTest.run("""
                 등록
                 1번 메시지
@@ -145,7 +159,7 @@ class WiseSayingControllerTest {
 
     @DisplayName("페이징 목록 조회 페이지 조건 사용")
     @Test
-    void 페이지사용페이징(){
+    void 페이지사용페이징조회(){
         // 데이터 생성
         String testData = setupTestData(6);
 
@@ -160,6 +174,5 @@ class WiseSayingControllerTest {
                 .contains("1 / 1번 작가 / 1번 메시지")
                 .contains("----------------------")
                 .contains("페이지 : 2 / [2]");
-
     }
 }
