@@ -27,7 +27,7 @@ class WiseSayingControllerTest {
 
     @DisplayName("명언 등록 후 확인")
     @Test
-    void 등록성공() {
+    void register_success() {
         final String out = AppTest.run("""
                 등록
                 1번 메시지
@@ -42,7 +42,7 @@ class WiseSayingControllerTest {
 
     @DisplayName("등록 후 수정 성공")
     @Test
-    void 수정성공(){
+    void update_success(){
         final String out = AppTest.run("""
                 등록
                 1번 메시지
@@ -58,9 +58,27 @@ class WiseSayingControllerTest {
 
     }
 
-    @DisplayName("등록 후 삭제 성공")
+    @DisplayName("수정 실패")
     @Test
-    void 삭제성공후조회시도(){
+    void update_failure(){
+        final String out = AppTest.run("""
+                등록
+                1번 메시지
+                1번 작가
+                수정?id=2
+                수정 테스트 내용
+                수정 테스트 작가
+                종료
+                """);
+        assertThat(out)
+                .contains("명언(기존) :")
+                .contains("작가(기존) :");
+
+    }
+
+    @DisplayName("등록 후 삭제 성공 (결과 조회 없음까지)")
+    @Test
+    void delete_success(){
         final String out = AppTest.run("""
                 등록
                 1번 메시지
@@ -76,7 +94,7 @@ class WiseSayingControllerTest {
 
     @DisplayName("등록 후 목록 확인")
     @Test
-    void 등록후목록(){
+    void list(){
         final String out = AppTest.run("""
                 등록
                 1번 메시지
@@ -94,7 +112,7 @@ class WiseSayingControllerTest {
 
     @DisplayName("빌드 성공")
     @Test
-    void 빌드성공(){
+    void build_success(){
         final String out = AppTest.run("""               
                 빌드
                 종료
@@ -105,7 +123,7 @@ class WiseSayingControllerTest {
     
     @DisplayName("등록 후 검색 성공")
     @Test
-    void 작가검색성공(){
+    void search_success(){
         final String out = AppTest.run("""
                 등록
                 1번 메시지
@@ -125,7 +143,7 @@ class WiseSayingControllerTest {
 
     @DisplayName("검색 실패")
     @Test
-    void 작가검색실패(){
+    void search_failure(){
         final String out = AppTest.run("""
                 목록?keywordType=author&keyword=아무개
                 종료
@@ -139,7 +157,7 @@ class WiseSayingControllerTest {
 
     @DisplayName("페이징 목록 조회 조건 없이")
     @Test
-    void 페이지없이페이징조회(){
+    void list_without_page(){
         final String out = AppTest.run("""
                 등록
                 1번 메시지
@@ -159,7 +177,7 @@ class WiseSayingControllerTest {
 
     @DisplayName("페이징 목록 조회 페이지 조건 사용")
     @Test
-    void 페이지사용페이징조회(){
+    void list_with_page(){
         // 데이터 생성
         String testData = setupTestData(6);
 
